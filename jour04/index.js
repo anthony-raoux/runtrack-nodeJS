@@ -10,15 +10,33 @@ async function main() {
 
         const database = client.db("LaPlateforme");
 
-        const result = await database.collection("student").insertOne({
-            "id": 1,
-            "lastname": "Doe",
-            "firstname": "John",
-            "students_number": "12345",
-            "year_id": new ObjectId("6028a20a1360ae62df23d79e")
-        });
+        const students = [
+            {
+                "id": 1,
+                "lastname": "Doe",
+                "firstname": "John",
+                "students_number": "12345",
+                "year_id": new ObjectId("6028a20a1360ae62df23d79e")
+            },
+            {
+                "id": 2,
+                "lastname": "LeBricoleur",
+                "firstname": "Bob",
+                "students_number": "54321",
+                "year_id": new ObjectId("6028a20a1360ae62df23d79e")
+            },
+            {
+                "id": 3,
+                "lastname": "Dupont",
+                "firstname": "Marine",
+                "students_number": "67890",
+                "year_id": new ObjectId("6028a20a1360ae62df23d79e")
+            }
+        ];
 
-        console.log("Document inséré avec succès :", result.insertedId);
+        const result = await database.collection("student").insertMany(students);
+
+        console.log("Documents insérés avec succès :", result.insertedIds);
 
     } catch (e) {
         console.error("Erreur lors de la connexion à MongoDB :", e);
