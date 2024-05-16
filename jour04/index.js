@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const readline = require('readline');
 
 mongoose.connect('mongodb://localhost:27017/LaPlateforme');
 
@@ -23,31 +22,21 @@ const studentSchema = new mongoose.Schema({
 // Modèle basé sur le schéma des étudiants
 const Student = mongoose.model('Student', studentSchema);
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
-
-rl.question('Entrez un nom de famille : ', async (lastname) => {
+async function updateStudentCursus(studentId, newYearId) {
   try {
-    // Récupération des informations de l'étudiant avec le nom de famille saisi
-    const student = await Student.findOne({ lastname: lastname }).populate('year_id');
+    // Mettre à jour le cursus de l'étudiant en fonction de son ID
+    const result = await Student.updateOne({ _id: studentId }, { year_id: newYearId });
 
-    // Affichage du résultat dans la console
-    if (student) {
-      const cursus = student.year_id ? student.year_id.name : 'Cursus inconnu';
-      console.log(`Informations de l'étudiant :`);
-      console.log(`Nom: ${student.lastname}`);
-      console.log(`Prénom: ${student.firstname}`);
-      console.log(`Numéro d'étudiant: ${student.students_number}`);
-      console.log(`Cursus: ${cursus}`);
-    } else {
-      console.log('Aucun étudiant trouvé avec ce nom de famille.');
-    }
+    console.log(`Nombre de documents mis à jour : ${result.nModified}`);
   } catch (error) {
     console.error('Une erreur est survenue :', error);
   } finally {
     mongoose.connection.close();
-    rl.close();
   }
-});
+}
+
+// Exemple d'utilisation
+const studentIdToUpdate = '6645c7d887c60858428750ff';
+const newYearId = '6645c58ba3fff839050b9932';
+
+updateStudentCursus(studentIdToUpdate, newYearId);
