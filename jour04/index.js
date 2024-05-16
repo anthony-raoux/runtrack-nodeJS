@@ -28,17 +28,22 @@ const rl = readline.createInterface({
   output: process.stdout
 });
 
-rl.question('Entrez un numéro d\'étudiant : ', async (students_number) => {
+rl.question('Entrez un nom de famille : ', async (lastname) => {
   try {
-    // Récupération des étudiants avec un numéro d'étudiant plus grand que celui saisi
-    const students = await Student.find({ students_number: { $gt: students_number } }).populate('year_id');
+    // Récupération des informations de l'étudiant avec le nom de famille saisi
+    const student = await Student.findOne({ lastname: lastname }).populate('year_id');
 
-    // Affichage des résultats dans la console
-    console.log(`Liste des étudiants avec un numéro d'étudiant plus grand que ${students_number} :`);
-    students.forEach(student => {
+    // Affichage du résultat dans la console
+    if (student) {
       const cursus = student.year_id ? student.year_id.name : 'Cursus inconnu';
-      console.log(`- ${student.firstname} ${student.lastname} (${student.students_number}) - Cursus: ${cursus}`);
-    });
+      console.log(`Informations de l'étudiant :`);
+      console.log(`Nom: ${student.lastname}`);
+      console.log(`Prénom: ${student.firstname}`);
+      console.log(`Numéro d'étudiant: ${student.students_number}`);
+      console.log(`Cursus: ${cursus}`);
+    } else {
+      console.log('Aucun étudiant trouvé avec ce nom de famille.');
+    }
   } catch (error) {
     console.error('Une erreur est survenue :', error);
   } finally {
