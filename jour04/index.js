@@ -22,12 +22,12 @@ const studentSchema = new mongoose.Schema({
 // Modèle basé sur le schéma des étudiants
 const Student = mongoose.model('Student', studentSchema);
 
-async function updateStudentCursus(studentId, newYearId) {
+async function deleteStudent(studentId) {
   try {
-    // Mettre à jour le cursus de l'étudiant en fonction de son ID
-    const result = await Student.updateOne({ _id: studentId }, { year_id: newYearId });
+    // Supprimer l'étudiant en fonction de son ID
+    const result = await Student.deleteOne({ _id: studentId });
 
-    console.log(`Nombre de documents mis à jour : ${result.nModified}`);
+    console.log(`Nombre de documents supprimés : ${result.deletedCount}`);
   } catch (error) {
     console.error('Une erreur est survenue :', error);
   } finally {
@@ -36,7 +36,7 @@ async function updateStudentCursus(studentId, newYearId) {
 }
 
 // Exemple d'utilisation
-const studentIdToUpdate = '6645c7d887c60858428750ff';
-const newYearId = '6645c58ba3fff839050b9932';
+const studentIdToDelete = '6645c7d887c60858428750ff';
 
-updateStudentCursus(studentIdToUpdate, newYearId);
+deleteStudent(studentIdToDelete);
+
