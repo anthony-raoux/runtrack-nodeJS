@@ -1,48 +1,43 @@
-const { MongoClient, ObjectId } = require('mongodb');
+const mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost:27017/LaPlateforme');
+
+// Définition du schéma pour les années
+const yearSchema = new mongoose.Schema({
+  name: String
+});
+
+// Modèle basé sur le schéma des années
+const Year = mongoose.model('Year', yearSchema);
+
+// Définition du schéma pour les étudiants
+const studentSchema = new mongoose.Schema({
+  id: Number,
+  lastname: String,
+  firstname: String,
+  students_number: String,
+  year_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Year' } // Référence à l'année
+});
+
+// Modèle basé sur le schéma des étudiants
+const Student = mongoose.model('Student', studentSchema);
 
 async function main() {
-    const uri = "mongodb://localhost:27017";
-    const client = new MongoClient(uri);
+  try {
+    // Récupération de tous les étudiants avec leurs cursus
+    const students = await Student.find().populate('year_id');
 
-    try {
-        await client.connect();
-        console.log("Connecté à MongoDB");
-
-        const database = client.db("LaPlateforme");
-
-        const students = [
-            {
-                "id": 1,
-                "lastname": "Doe",
-                "firstname": "John",
-                "students_number": "12345",
-                "year_id": new ObjectId("6028a20a1360ae62df23d79e")
-            },
-            {
-                "id": 2,
-                "lastname": "LeBricoleur",
-                "firstname": "Bob",
-                "students_number": "54321",
-                "year_id": new ObjectId("6028a20a1360ae62df23d79e")
-            },
-            {
-                "id": 3,
-                "lastname": "Dupont",
-                "firstname": "Marine",
-                "students_number": "67890",
-                "year_id": new ObjectId("6028a20a1360ae62df23d79e")
-            }
-        ];
-
-        const result = await database.collection("student").insertMany(students);
-
-        console.log("Documents insérés avec succès :", result.insertedIds);
-
-    } catch (e) {
-        console.error("Erreur lors de la connexion à MongoDB :", e);
-    } finally {
-        await client.close();
-    }
+    // Affichage des résultats dans la console
+    console.log('Liste des étudiants de La Plateforme avec leurs cursus :');
+    students.forEach(student => {
+      const cursus = student.year_id ? student.year_id.name : 'Cursus inconnu';
+      console.log(`- ${student.firstname} ${student.lastname} (${student.students_number}) - Cursus: ${cursus}`);
+    });
+  } catch (error) {
+    console.error('Une erreur est survenue :', error);
+  } finally {
+    mongoose.connection.close();
+  }
 }
 
-main().catch(console.error);
+main();
