@@ -1,19 +1,19 @@
 const express = require('express');
+const path = require('path');
 const app = express();
 
-const port = 3000;
+const port = 80;
 
-// Route pour la page d'accueil
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.get('/', (req, res) => {
-    res.send('Bienvenue sur la page d\'accueil de mon site web!');
+    res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
-// Route pour la page "about"
 app.get('/about', (req, res) => {
-    res.send('Bienvenue sur la page "À propos".');
+    res.sendFile(path.join(__dirname, 'views', 'about.html'));
 });
 
-// Middleware pour gérer les erreurs 404
 app.use((req, res, next) => {
     res.status(404).send('Page non trouvée');
 });
